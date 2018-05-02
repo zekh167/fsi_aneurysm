@@ -1667,8 +1667,7 @@ for nodeIdx in range(0, len(solidInletNodes)):
     if (debug):
         print('      Node        %d:' % (nodeNumber))
         print('         Displacement     = [ ????, ????, %.2f ]' % (0.0))
-fsiSolverEquations.BoundaryConditionsCreateFinish()
-pdb.set_trace()
+
 if (debug):
     print('  Lagrange Boundary conditions:')
 # Remove Lagrange multipliers where solid displacement and fluid velocity is zero
@@ -1722,7 +1721,7 @@ for nodeIdx in range(0, len(interfaceInletNodes)):
 
     # Finish fsi boundary conditions
 fsiSolverEquations.BoundaryConditionsCreateFinish()
-pdb.set_trace()
+
 # Start the creation of the moving mesh boundary conditions
 movingMeshBoundaryConditions = iron.BoundaryConditions()
 movingMeshSolverEquations.BoundaryConditionsCreateStart(movingMeshBoundaryConditions)
@@ -1763,7 +1762,7 @@ movingMeshSolverEquations.BoundaryConditionsCreateFinish()
 
 if (progressDiagnostics):
     print('Boundary Conditions ... Done')
-
+pdb.set_trace()
 # ================================================================================================================================
 #  Run Solvers
 # ================================================================================================================================

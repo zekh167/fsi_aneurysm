@@ -401,6 +401,10 @@ print ('...numberOfInterfaceElements = ') , numberOfInterfaceElements
 solidNodePositions=[]
 fluidNodePositions=[]
 interfaceNodePositions=[]
+solidInletNodesOnRightXaxis=[]
+solidInletNodesOnLeftXaxis=[]
+solidInletNodesOnTopYaxis=[]
+solidInletNodesOnBottomYaxis=[]
 
 with open("hollowcylinder16.1.node","r") as nodefile:
     target = nodefile.readlines()
@@ -421,6 +425,17 @@ with open("hollowcylinder16.1.node","r") as nodefile:
                 solidNodeCoordinates[2] = float(target[lineNum][2])
                 solidNodeCoordinates[3] = float(target[lineNum][3])
 		solidNodePositions.append(solidNodeCoordinates)
+		if solidNodeCoordinates[3] == 0:
+		    if solidNodeCoordinates[2] == 0:
+			if solidNodeCoordinates[1] > 0:
+			    solidInletNodesOnRightXaxis.append(solidNodeCoordinates[0])
+			else:
+			    solidInletNodesOnLeftXaxis.append(solidNodeCoordinates[0])
+		    if solidNodeCoordinates[1] == 0:
+			if solidNodeCoordinates[2] > 0:
+			    solidInletNodesOnTopYaxis.append(solidNodeCoordinates[0])
+			else:
+			    solidInletNodesOnBottomYaxis.append(solidNodeCoordinates[0])
 		if nodeNumber in fluidNodesList: 
 		    interfaceNodeCoordinates=[0]*4
 		    interfaceNodeCoordinates[0]= nodeNumber
@@ -1594,9 +1609,8 @@ if (debug):
 # Set solid boundary conditions
  #Set nodes on the axis to only slide on the axis.
 #Top y-axis node - fix in the x-direction
-for nodeIdx in range (0,2):
-    M1=[5,37]
-    nodeNumber = M1[nodeIdx]
+for nodeIdx in range (0,len(solidInletNodesOnTopYaxis)):
+    nodeNumber = solidInletNodesOnTopYaxis[nodeIdx]
     #nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
     #if (nodeDomain == computationalNodeNumber):
     fsiBoundaryConditions.AddNode(solidDependentField,iron.FieldVariableTypes.U,1, \
@@ -1607,9 +1621,8 @@ for nodeIdx in range (0,2):
         print('         Displacement     = [ %.2f, ????, ???? ]' % (0.0))  
                    
 #Right x-axis node - fix in the y-direction
-for nodeIdx in range (0,2):
-    M2=[1,33]
-    nodeNumber = M2[nodeIdx]
+for nodeIdx in range (0,len(solidInletNodesOnRightXaxis)):
+    nodeNumber = solidInletNodesOnRightXaxis[nodeIdx]
     #nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
     #if (nodeDomain == computationalNodeNumber):
     fsiBoundaryConditions.AddNode(solidDependentField,iron.FieldVariableTypes.U,1, \
@@ -1620,9 +1633,8 @@ for nodeIdx in range (0,2):
         print('         Displacement     = [ ????, %.2f, ???? ]' % (0.0))   
                        
 #Bottom y-axis node - fix in the x-direction
-for nodeIdx in range (0,2):
-    M3=[13,45]
-    nodeNumber = M3[nodeIdx]
+for nodeIdx in range (0,len(solidInletNodesOnBottomYaxis)):
+    nodeNumber = solidInletNodesOnBottomYaxis[nodeIdx]
     #nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
     #if (nodeDomain == computationalNodeNumber):
     fsiBoundaryConditions.AddNode(solidDependentField,iron.FieldVariableTypes.U,1, \
@@ -1633,9 +1645,8 @@ for nodeIdx in range (0,2):
         print('         Displacement     = [ %.2f, ????, ???? ]' % (0.0)) 
                        
 #Left x-axis node - fix in the y-direction
-for nodeIdx in range (0,2):
-    M4=[9,41]
-    nodeNumber = M4[nodeIdx]
+for nodeIdx in range (0,len(solidInletNodesOnLeftXaxis)):
+    nodeNumber = solidInletNodesOnLeftXaxis[nodeIdx]
     #nodeDomain = fluidDecomposition.NodeDomainGet(nodeNumber,1)
     #if (nodeDomain == computationalNodeNumber):
     fsiBoundaryConditions.AddNode(solidDependentField,iron.FieldVariableTypes.U,1, \
@@ -1656,7 +1667,8 @@ for nodeIdx in range(0, len(solidInletNodes)):
     if (debug):
         print('      Node        %d:' % (nodeNumber))
         print('         Displacement     = [ ????, ????, %.2f ]' % (0.0))
-
+fsiSolverEquations.BoundaryConditionsCreateFinish()
+pdb.set_trace()
 if (debug):
     print('  Lagrange Boundary conditions:')
 # Remove Lagrange multipliers where solid displacement and fluid velocity is zero
@@ -1710,8 +1722,6 @@ for nodeIdx in range(0, len(interfaceInletNodes)):
 
     # Finish fsi boundary conditions
 fsiSolverEquations.BoundaryConditionsCreateFinish()
-
-
 pdb.set_trace()
 # Start the creation of the moving mesh boundary conditions
 movingMeshBoundaryConditions = iron.BoundaryConditions()

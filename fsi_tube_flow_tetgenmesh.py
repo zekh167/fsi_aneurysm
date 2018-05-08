@@ -390,7 +390,7 @@ with open('hollowcylinder16.1.face', 'r') as facefile:
                                 interfaceOutletNodes.append(outletFaceNodes[Index])
 			elif outletFaceNodes[Index] not in solidNodesList:
                             if outletFaceNodes[Index] not in fluidOutletNodes:
-                                fluidOutletNodes.append(outletFaceNodes[Index])	        
+                                fluidOutletNodes.append(outletFaceNodes[Index])	    
 
 print ('...numberOfInterfaceNodes = ') , numberOfInterfaceNodes
 print ('...numberOfInterfaceElements = ') , numberOfInterfaceElements
@@ -676,6 +676,7 @@ fluidlocalNodes = [0] * numberOfLocalInterfaceNodes
 solidElementsOnInterface=[]
 fluidElementsOnInterface=[]
 
+
 for i in range(0, numberOfInterfaceElements):
     interfaceElementNumber = solidElementsConnection[i][0]
     solidElementNumber = solidElementsConnection[i][1]
@@ -693,24 +694,24 @@ for i in range(0, numberOfInterfaceElements):
 	        if interfaceMatrix[i][j+2] in solidMatrix[k]:
 		    solidElementsOnInterface.append(solidMatrix[k])
 	            interfacelocalNodes=[0]*3
-	            interfacelocalNodes[0]=interfaceNodesList.index(interfaceMatrix[i][j])+1
-	            interfacelocalNodes[1]=interfaceNodesList.index(interfaceMatrix[i][j+1])+1
-	            interfacelocalNodes[2]=interfaceNodesList.index(interfaceMatrix[i][j+2])+1
+	            interfacelocalNodes[0]=interfaceMatrix[i][j]
+	            interfacelocalNodes[1]=interfaceMatrix[i][j+1]
+	            interfacelocalNodes[2]=interfaceMatrix[i][j+2]
 	            solidlocalNodes=[0]*3
-	            solidlocalNodes[0]=solidNodesList.index(interfaceMatrix[i][j])+1
-	            solidlocalNodes[1]=solidNodesList.index(interfaceMatrix[i][j+1])+1
-	            solidlocalNodes[2]=solidNodesList.index(interfaceMatrix[i][j+2])+1
+	            solidlocalNodes[0]=interfaceMatrix[i][j]
+	            solidlocalNodes[1]=interfaceMatrix[i][j+1]
+	            solidlocalNodes[2]=interfaceMatrix[i][j+2]
     for z in range(0,numberOfFluidElements):
 	if interfaceMatrix[i][j] in fluidMatrix[z]:
             if interfaceMatrix[i][j+1] in fluidMatrix[z]:
 	        if interfaceMatrix[i][j+2] in fluidMatrix[z]:
 		    fluidElementsOnInterface.append(fluidMatrix[z])
 	            fluidlocalNodes=[0]*3
-	            fluidlocalNodes[0]=fluidNodesList.index(interfaceMatrix[i][j])+1
-	            fluidlocalNodes[1]=fluidNodesList.index(interfaceMatrix[i][j+1])+1
-	            fluidlocalNodes[2]=fluidNodesList.index(interfaceMatrix[i][j+2])+1
+	            fluidlocalNodes[0]=interfaceMatrix[i][j]
+	            fluidlocalNodes[1]=interfaceMatrix[i][j+1]
+	            fluidlocalNodes[2]=interfaceMatrix[i][j+2]
 
-# Map interface xi
+    # Map interface xi
     xi0=[0,1,1]
     xi1=[1,0,1]
     xi2=[1,1,0]
@@ -735,11 +736,7 @@ for i in range(0, numberOfInterfaceElements):
         elif b==2:
 	    fluidXi=xi2
         elif b==3:
-	    fluidXi=xi3
-
-        interfaceNodes[interfacelocalNodes[localNodeIdx]-1] = interfacelocalNodes[localNodeIdx]
-        solidNodes[interfacelocalNodes[localNodeIdx]-1] = solidlocalNodes[localNodeIdx]
-        fluidNodes[interfacelocalNodes[localNodeIdx]-1] = fluidlocalNodes[localNodeIdx]
+	    fluidXi=xi3	
         interfaceMeshConnectivity.ElementXiSet(interfaceElementNumber,solidMeshIndex,solidElementNumber,
                                                            localNodeIdx+1,1,solidXi)
         interfaceMeshConnectivity.ElementXiSet(interfaceElementNumber,fluidMeshIndex,fluidElementNumber,
@@ -749,10 +746,14 @@ for i in range(0, numberOfInterfaceElements):
         print('      Solid node        %8d; Solid xi = [ %.2f, %.2f, %.2f ]' % \
                     (solidlocalNodes[localNodeIdx], solidXi[0], solidXi[1], solidXi[2]))
         print('      Fluid node        %8d; Fluid xi = [ %.2f, %.2f, %.2f ]' % \
-                    (fluidlocalNodes[localNodeIdx], fluidXi[0], fluidXi[1], fluidXi[2]))
+                   (fluidlocalNodes[localNodeIdx], fluidXi[0], fluidXi[1], fluidXi[2]))
 
-
-# Map interface nodes
+  
+  # Map interface nodes
+    for index in range(0,numberOfInterfaceNodes):
+        interfaceNodes[index] = interfacelocalNodes[localNodeIdx]
+        solidNodes[index] = solidlocalNodes[localNodeIdx]
+        fluidNodes[index] = fluidlocalNodes[localNodeIdx]
 interfaceMeshConnectivity.NodeNumberSet(interfaceNodes,solidMeshIndex,solidNodes,fluidMeshIndex,fluidNodes)
 
 interfaceMeshConnectivity.CreateFinish()
@@ -1762,7 +1763,7 @@ movingMeshSolverEquations.BoundaryConditionsCreateFinish()
 
 if (progressDiagnostics):
     print('Boundary Conditions ... Done')
-pdb.set_trace()
+
 # ================================================================================================================================
 #  Run Solvers
 # ================================================================================================================================
@@ -1785,7 +1786,6 @@ if not os.path.exists("output/Solid"):
     os.makedirs("output/Solid")
 if not os.path.exists("output/Interface"):
     os.makedirs("output/Interface")
-
 # Solve the problem
 print('Solving problem...')
 start = time.time()

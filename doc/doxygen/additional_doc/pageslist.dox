@@ -1,0 +1,21 @@
+/*!
+\page programmer_documentation Programmer Documentation
+- \subpage introduction
+- \subpage concepts
+- \subpage installation
+- \subpage code_style 
+- \subpage development
+- \subpage object_interface
+- \subpage local-examples
+- \subpage library_commands  
+- \subpage get_updated
+- \subpage tools
+- \subpage profiling_with_TAU
+.
+Development notes:
+- \subpage opencmiss_cellml
+.
+Theory:
+- <A HREF="http://cmiss.bioeng.auckland.ac.nz/OpenCMISS/doc/latexhtml">HTML version</A>
+- <A HREF="http://cmiss.bioeng.auckland.ac.nz/OpenCMISS/doc/OpenCMISSNotes.pdf">PDF version</A>
+*/

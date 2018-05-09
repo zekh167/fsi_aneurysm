@@ -667,15 +667,14 @@ interfaceMeshConnectivity.CreateStart(interface, interfaceMesh)
 interfaceMeshConnectivity.BasisSet(interfaceBasis)
 
 numberOfLocalInterfaceNodes=3
-interfaceNodes = [0]*(numberOfInterfaceNodes)
-solidNodes = [0]*(numberOfInterfaceNodes)
-fluidNodes = [0]*(numberOfInterfaceNodes)
+interfaceNodes = []
+solidNodes = []
+fluidNodes = []
 interfacelocalNodes = [0] * numberOfLocalInterfaceNodes
 solidlocalNodes = [0] * numberOfLocalInterfaceNodes
 fluidlocalNodes = [0] * numberOfLocalInterfaceNodes
 solidElementsOnInterface=[]
 fluidElementsOnInterface=[]
-
 
 for i in range(0, numberOfInterfaceElements):
     interfaceElementNumber = solidElementsConnection[i][0]
@@ -748,14 +747,24 @@ for i in range(0, numberOfInterfaceElements):
         print('      Fluid node        %8d; Fluid xi = [ %.2f, %.2f, %.2f ]' % \
                    (fluidlocalNodes[localNodeIdx], fluidXi[0], fluidXi[1], fluidXi[2]))
 
-  
-  # Map interface nodes
-    for index in range(0,numberOfInterfaceNodes):
-        interfaceNodes[index] = interfacelocalNodes[localNodeIdx]
-        solidNodes[index] = solidlocalNodes[localNodeIdx]
-        fluidNodes[index] = fluidlocalNodes[localNodeIdx]
-interfaceMeshConnectivity.NodeNumberSet(interfaceNodes,solidMeshIndex,solidNodes,fluidMeshIndex,fluidNodes)
+    # Map interface nodes
+        if interfacelocalNodes[localNodeIdx] not in interfaceNodes:
+            interfaceNodes.append (interfacelocalNodes[localNodeIdx])
+	if interfacelocalNodes[localNodeIdx] not in solidNodes:
+            solidNodes.append(solidlocalNodes[localNodeIdx])
+	if interfacelocalNodes[localNodeIdx] not in fluidNodes:
+            fluidNodes.append(fluidlocalNodes[localNodeIdx])
 
+#print interfaceNodesList
+#print interfaceNodes
+#print len(interfaceNodes)
+#print solidNodes
+#print len(solidNodes)
+#print fluidNodes
+#print len(fluidNodes)
+
+interfaceMeshConnectivity.NodeNumberSet(interfaceNodes,solidMeshIndex,solidNodes,fluidMeshIndex,fluidNodes)
+	
 interfaceMeshConnectivity.CreateFinish()
 
 if (progressDiagnostics):

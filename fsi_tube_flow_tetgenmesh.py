@@ -55,7 +55,7 @@ solidPInit = 0.0
 movingMeshKParameter = 1.0  # default
 
 RBS = False
-# RBS = True
+#RBS = True
 
 outputFrequency = 1  # Result output frequency
 
